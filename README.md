@@ -13,6 +13,7 @@ This launches a Mimer SQL database server that is accessible on port 1360, the s
 Access Mimer using for instance DBVisualizer (https://www.dbvis.com) which comes with a JDBC driver and support for Mimer. With the example above is the host `localhost` and the port 1360. Login as "SYSADM", password "SYSADM".
 
 The JDBC connection string would then be
+```jdbc:mimer://localhost:1360/mimerdb```
 
 ## Saving data between containers
 Since the container is a separate entity, the above solution will lose all data when the container is killed. There are several solutions to this but the easiest in a test scenario is top map a directory on the host system to the container, thus causing all file writes to happen in the host file system which is persistent.

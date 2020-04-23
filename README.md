@@ -1,11 +1,11 @@
-# Mimer SQL version 10.1
+# Mimer SQL version 11.0 BETA
 
-This is a docker build of Mimer SQL version 10.1. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
+This is a docker build of Mimer SQL version 11.0 BETA. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
 
 ## Running Mimer
 Run the container with
 
-```docker run -p 1360:1360 -d mimersql/mimersql_v10.1:latest```
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
 
@@ -30,7 +30,7 @@ Since this results in a persisten database we strongly recommend changing the pa
 
 ### Procedure
 1. Create a fresh database using a seeding container
-    - `docker run --rm -d mimersql/mimersql_v10.1:latest`
+    - `docker run --rm -d mimersql/mimersql_v11.0:latest`
 
 2. Find the ID of this container (a 12 digit hexadecimal number)
     - `docker ps -l -q`
@@ -42,7 +42,7 @@ Since this results in a persisten database we strongly recommend changing the pa
     - `docker kill <container ID>`
 
 5. Start a new container, this time mapping the host local database into the container, thus replacing the one installed by default in the image
-    - `docker run -v $(PWD)/mimerdb:/usr/local/MimerSQL/mimerdb -p 1360:1360 -d mimersql/mimersql_v10.1:latest`
+    - `docker run -v $(PWD)/mimerdb:/usr/local/MimerSQL/mimerdb -p 1360:1360 -d mimersql/mimersql_v11.0:latest`
 
 6. Remember to shut down the container with `docker stop` and not `docker kill` in order to allow Mimer to close the database orderly. If the container is stopped with `docker kill` it will force a DBCHK on the next start.
 

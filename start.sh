@@ -13,9 +13,17 @@ trap cleanup SIGTERM
 # start networking
 service xinetd start
 
-# start Mimer SQL and return the current version on stdout
-mimcontrol -s mimerdb
-miminfo -V
+# install a license if there is one
+if [[ -e /usr/local/MimerSQL/mimerdb/key.mcfg ]]
+then
+  mimlicense -n -f /usr/local/MimerSQL/mimerdb/key.mcfg
+fi
 
- # keep looping and looping and looping and…
+# report the license status
+mimlicense -c
+
+# start Mimer SQL
+mimcontrol -s mimerdb
+
+# keep looping and looping and looping and…
 while true; do :; done

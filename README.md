@@ -9,6 +9,10 @@ Run the container with
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
 
+A SYSADM password can be specified with -e MIMER_SYSADM_PASSWORD=<password>. If not, a new password is generated and printed. Rember this password, it cannot be recovered.
+
+A Mimer SQL license can be specified with -e MIMER_KEY=<Hex key value>
+
 ## Connecting to the database
 Access Mimer using for instance DBVisualizer (https://www.dbvis.com) which comes with a JDBC driver and support for Mimer. With the example above is the host `localhost` and the port 1360. Login as "SYSADM", password "SYSADM".
 
@@ -17,6 +21,7 @@ The JDBC connection string would then be
 
 ## Saving data between containers
 Since the container is a separate entity, the above solution will lose all data when the container is killed. There are several solutions to this but the easiest in a test scenario is top map a directory on the host system to the container, thus causing all file writes to happen in the host file system which is persistent.
+
 
 ### Strategy
 
@@ -43,7 +48,7 @@ Since this results in a persisten database we strongly recommend changing the pa
     - `docker kill <container ID>`
 
 5. Start a new container, this time mapping the host local database into the container, thus replacing the one installed by default in the image
-    - `docker run -v $(PWD)/mimerdb:/usr/local/MimerSQL/mimerdb -p 1360:1360 -d mimersql/mimersql_v11.0:latest`
+    - `docker run -v $(pwd)/mimerdb:/usr/local/MimerSQL/mimerdb -p 1360:1360 -d mimersql/mimersql_v11.0:latest`
 
 6. Remember to shut down the container with `docker stop` and not `docker kill` in order to allow Mimer to close the database orderly. If the container is stopped with `docker kill` it will force a DBCHK on the next start.
 

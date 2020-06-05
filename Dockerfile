@@ -12,9 +12,6 @@ ENV DEBFILE mimersql1103_11.0.3C-32192_amd64.deb
 RUN wget http://ftp.mimer.com/pub/beta/linux_x64/${DEBFILE}
 RUN dpkg --install ${DEBFILE}
 
-# create a new, empty database
-RUN dbinstall -q -d -u root mimerdb SYSADM /usr/local/MimerSQL
-
 # copy the start script and launch Mimer SQL
 COPY start.sh /
 CMD [ "/start.sh" ]

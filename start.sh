@@ -42,8 +42,10 @@ fi
 if [ "${MIMER_SYSADM_PASSWORD}" = "" -a $CREATE_DATABASE = 1 ];
 then
   #Generate a new SYSADM password and print it
-  MIMER_SYSADM_PASSWORD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w12 | head -n1)
+  SYSADM_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w12 | head -n1)
   echo "Mimer SQL SYSADM password is generated since none was specified with -e MIMER_SYSADM_PASSWORD=<password>"
+else
+  SYSADM_PWD=${MIMER_SYSADM_PASSWORD}
 fi
 
 
@@ -77,13 +79,13 @@ if [ $CREATE_DATABASE = 1 ];
 then
   # create a new, empty database
   echo "Creating a new Mimer SQL database ${MIMER_DATABASE}"
-  dbinstall -a -q -d -h ${MIMER_DATA_DIR} -u root ${MIMER_DATABASE} ${MIMER_SYSADM_PASSWORD}
+  dbinstall -a -q -d -h ${MIMER_DATA_DIR} -u root ${MIMER_DATABASE} ${SYSADM_PWD}
 
   #Check if a initialization SQL file was specified
   if [ "${MIMER_INIT_FILE}" != "" ];
   then
     echo "Running SQL init script"
-    bsql -uSYSADM -p${MIMER_SYSADM_PASSWORD} < ${MIMER_INIT_FILE}
+    bsql -uSYSADM -p${SYSADM_PWD} < ${MIMER_INIT_FILE}
   fi
 else
   # start Mimer SQL
@@ -91,10 +93,12 @@ else
   mimcontrol -s ${MIMER_DATABASE}
 fi
 
-if [ $CREATE_DATABASE = 1 ]; 
+if [ $CREATE_DATABASE = 1 -a "${MIMER_SYSADM_PASSWORD}" = "" ]; 
 then
-  echo "Mimer SQL SYSADM password is: ${MIMER_SYSADM_PASSWORD}." 
+  echo "Mimer SQL SYSADM password is: ${SYSADM_PWD}" 
   echo "Remember this password since it cannot be recovered later"
 fi
+
+mimlistdb
 # keep looping and looping and looping and…
 while true; do sleep 300; done

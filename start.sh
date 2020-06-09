@@ -9,7 +9,7 @@ cleanup()
   exit 0
 }
 
-trap cleanup SIGTERM
+trap "cleanup" INT TERM
 
 # start networking
 service xinetd start
@@ -64,7 +64,7 @@ then
   mimlicense -n -a ${MY_KEY}
   # report the license status
   mimlicense -c
-elif [[ -e ${MIMER_DATA_DIR}/key.mcfg ]];
+elif [ -e ${MIMER_DATA_DIR}/key.mcfg ];
 then
   echo "Install Mimer SQL license from ${MIMER_DATA_DIR}/key.mcfg"
   mimlicense -n -f ${MIMER_DATA_DIR}/key.mcfg
@@ -99,6 +99,8 @@ then
   echo "Remember this password since it cannot be recovered later"
 fi
 
-mimlistdb
-# keep looping and looping and looping and…
-while true; do sleep 300; done
+# Wait forever
+while true
+do
+  tail -f /dev/null & wait ${!}
+done

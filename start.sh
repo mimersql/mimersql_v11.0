@@ -19,7 +19,6 @@ config_and_start_mimer()
     mimcontrol -g ${MIMER_DATABASE}
   fi
   if [ "${MIMER_TCP_PORT}" != "" ]; then
-    echo "Setting Mimer SQL TCP port"
     mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs TCPPort ${MIMER_TCP_PORT}
   fi
   if [ "${MIMER_MAX_DBFILES}" != "" ]; then

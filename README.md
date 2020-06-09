@@ -13,6 +13,8 @@ A SYSADM password can be specified with -e MIMER_SYSADM_PASSWORD=<password>. If 
 
 A Mimer SQL license can be specified with -e MIMER_KEY=<Hex key value>
 
+It's possible to configure the Mimer SQL database, for example how much memory it will use and what TCP port to use. To configure the TCP Port, use -e MIMER_TCP_PORT=<port number>. See start.sh for all parameters that are possible to configure.
+
 ## Connecting to the database
 Access Mimer using for instance DBVisualizer (https://www.dbvis.com) which comes with a JDBC driver and support for Mimer. With the example above is the host `localhost` and the port 1360. Login as "SYSADM", password "SYSADM".
 

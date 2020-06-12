@@ -1,5 +1,5 @@
 # This Docker image is based on debian
-FROM debian:latest
+FROM debian:buster
 
 # update and install necessary utilities
 RUN apt-get update \

@@ -134,7 +134,7 @@ fi
 if [ -e ${MIMER_DATA_DIR}/${MIMER_DATABASE}/my_mimerkey.mcfg ];
 then
   echo "Install Mimer SQL license"
-  MY_KEY=$(<${MIMER_DATA_DIR}/${MIMER_DATABASE}/my_mimerkey.mcfg)
+  MY_KEY=`cat ${MIMER_DATA_DIR}/${MIMER_DATABASE}/my_mimerkey.mcfg`
   mimlicense -n -a ${MY_KEY}
   # report the license status
   mimlicense -c

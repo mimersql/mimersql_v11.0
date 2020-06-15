@@ -18,9 +18,10 @@ config_and_start_mimer()
   if [ ! -e ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs ]; then
     mimcontrol -g ${MIMER_DATABASE}
   fi
-  if [ "${MIMER_TCP_PORT}" != "" ]; then
-    mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs TCPPort ${MIMER_TCP_PORT}
+  if [ "${MIMER_TCP_PORT}" = "" ]; then
+    MIMER_TCP_PORT=1360
   fi
+    mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs TCPPort ${MIMER_TCP_PORT}
   if [ "${MIMER_MAX_DBFILES}" != "" ]; then
     mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs Databanks ${MIMER_MAX_DBFILES}
   fi
@@ -85,8 +86,7 @@ config_and_start_mimer()
   mimcontrol -s ${MIMER_DATABASE}
 }
 
-# start networking
-service xinetd start
+
 
 #Get environment variables and set default values if they are not set
 if [ "${MIMER_DATA_DIR}" = "" ]; 

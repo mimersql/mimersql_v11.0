@@ -3,7 +3,7 @@ FROM debian:buster
 
 # update and install necessary utilities
 RUN apt-get update \
-    && apt-get install -y systemd xinetd wget procps file
+    && apt-get install -y wget procps file
 
 # set the name of the package
 ENV DEBFILE mimersql1103_11.0.3C-32192_amd64.deb

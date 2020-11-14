@@ -6,10 +6,10 @@ RUN apt-get update \
     && apt-get install -y wget procps file
 
 # set the name of the package
-ENV DEBFILE mimersql1103_11.0.3C-32192_amd64.deb
+ENV DEBFILE mimersql1104_11.0.4A-33874_amd64.deb 
 
 # fetch the package and install it
-RUN wget http://ftp.mimer.com/pub/beta/linux_x64/${DEBFILE}
+RUN wget http://ftp.mimer.com/pub/dist/linux_x64/${DEBFILE}
 RUN dpkg --install ${DEBFILE}
 
 STOPSIGNAL SIGINT

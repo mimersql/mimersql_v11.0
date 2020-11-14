@@ -31,8 +31,8 @@ config_and_start_mimer()
   if [ "${MIMER_MAX_TABLES}" != "" ]; then
     mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs Tables ${MIMER_MAX_TABLES}
   fi
-  if [ "${MIMER_MAX_TRAX}" != "" ]; then
-    mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs ActTrans ${MIMER_MAX_TRAX}
+  if [ "${MIMER_MAX_TRANS}" != "" ]; then
+    mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs ActTrans ${MIMER_MAX_TRANS}
   fi
   if [ "${MIMER_BUFFERPOOL_SIZE}" != "" ]; then
       mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs Pages4K $((${MIMER_BUFFERPOOL_SIZE}/2/4))

@@ -1,19 +1,43 @@
-# Mimer SQL version 11.0 BETA
+# Mimer SQL version 11.0
 
-This is a docker build of Mimer SQL version 11.0 BETA. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
+This is a docker build of Mimer SQL version 11.0. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
 
 ## Running Mimer
 Run the container with
 
 ```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+or use a specic tag, for example the V11.0.4A releas:
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.4a```
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
 
-A SYSADM password can be specified with -e MIMER_SYSADM_PASSWORD=<password>. If not, a new password is generated and printed. Rember this password, it cannot be recovered.
+A SYSADM password can be specified with -e MIMER_SYSADM_PASSWORD=\<password\>. If not, a new password is generated and printed. Remember this password, it cannot be recovered.
 
-A Mimer SQL license can be specified with -e MIMER_KEY=<Hex key value>
+A Mimer SQL license can be specified with -e MIMER_KEY=<Hex key value>. If a persistent storage is used the Mimer SQL license is saved in the Mimer data directory, MIMER_DATA_DIR (see below), for future use, i.e when the container is started again. An alternative way is to copy your Mimer SQL license file directly to MIMER_DATA_DIR/my_mimerkey.mcfg.
 
-It's possible to configure the Mimer SQL database, for example how much memory it will use and what TCP port to use. To configure the TCP Port, use -e MIMER_TCP_PORT=<port number>. See start.sh for all parameters that are possible to configure.
+## Configuration of the Mimer SQL database
+It's possible to configure the Mimer SQL database, for example how much memory it will use and what TCP port to use with Docker environment variables. To configure the TCP Port for example, use -e MIMER_TCP_PORT=\<port number\> when starting the container. The following environment variables with the corresponding Mimer SQL multidefs configuration parameter are available:
+
+- MIMER_TCP_PORT = TCPPort
+- MIMER_MAX_DBFILES = Databanks
+- MIMER_MAX_USERS = Users
+- MIMER_MAX_TABLES = Tables
+- MIMER_MAX_TRANS = ActTrans
+- MIMER_PAGES_4K = Pages4K
+- MIMER_PAGES_32K = Pages32K
+- MIMER_PAGES_32K = Pages128K
+- MIMER_REQUEST_THREADS = RequestThreads
+- MIMER_BACKGROUND_THREADS = BackgroundThreads
+- MIMER_TC_FLUSH_THREADS = TcFlushThreads
+- MIMER_BG_PRIORITY = BackgroundPriority
+- MIMER_INIT_SQLPOOL = SQLPool
+- MIMER_MAX_SQLPOOL = MaxSQLPool
+- MIMER_DELAYED_COMMIT = DelayedCommit
+- MIMER_DELAYED_COMMIT_TIMEOUT = DelayedCommitTimeout
+- MIMER_GROUP_COMMIT_TIMEOUT = GroupCommitTimeout
+- MIMER_NETWORK_ENCRYPTION = NetworkEncryption
+
+See the Mimer SQL documenation for information about the different multidefs configuration parameters.
 
 ## Connecting to the database
 Access Mimer using for instance DBVisualizer (https://www.dbvis.com) which comes with a JDBC driver and support for Mimer. With the example above is the host `localhost` and the port 1360. Login as "SYSADM", password "SYSADM".
@@ -22,37 +46,10 @@ The JDBC connection string would then be
 ```jdbc:mimer://localhost:1360/mimerdb```
 
 ## Saving data between containers
-Since the container is a separate entity, the above solution will lose all data when the container is killed. There are several solutions to this but the easiest in a test scenario is top map a directory on the host system to the container, thus causing all file writes to happen in the host file system which is persistent.
+Since the container is a separate entity, the above solution will lose all data when the container is killed. There are several solutions to this but the easiest is to map a directory on the host system to the container's MIMER_DATA_DIR, thus causing all file writes to happen in the host file system which is persistent. The default MIMER_DATA_DIR in the container is `/data`. This can be changed with the environment variable MIMER_DATA_DIR.
 
+To achieve this is, create a directory on the host that will act as the MIMER_DATA_DIR. This is where the database, license files and configurations are stored. Everything is stored in the database home directory located in MIMER_DATA_DIR, by default `mimerdb`. Then mount the directory when starting the container:
+```docker run -v /my_data:/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+The Mimer SQL database and it's configuration will now be stored in /my_data/mimerdb on the host.
 
-### Strategy
-
-1. Start a fresh copy of the Mimer SQL container, which will create an emtpy database
-1. Copy the empty database from the conainer to the host file system
-1. Kill the container
-1. Start a new container with Mimer SQL, only to this time replace the container's path to the database with a mapping to the host file system instead.
-
-This way, when the container is killed, all data resides in the persistent host file system and can be accessed when  a new container is launched that is mapped to this path.
-
-Since this results in a persisten database we strongly recommend changing the password for the SYSADM user from the default.
-
-### Procedure
-1. Create a fresh database using a seeding container
-    - `docker run --rm -d mimersql/mimersql_v11.0:latest`
-
-2. Find the ID of this container (a 12 digit hexadecimal number)
-    - `docker ps -l -q`
-
-3. Copy the database from the container to the local filesystem using this ID
-    - `docker cp <container ID>:/usr/local/MimerSQL/mimerdb .`
-
-4. Kill and remove the seeding container
-    - `docker kill <container ID>`
-
-5. Start a new container, this time mapping the host local database into the container, thus replacing the one installed by default in the image
-    - `docker run -v $(pwd)/mimerdb:/usr/local/MimerSQL/mimerdb -p 1360:1360 -d mimersql/mimersql_v11.0:latest`
-
-6. Remember to shut down the container with `docker stop` and not `docker kill` in order to allow Mimer to close the database orderly. If the container is stopped with `docker kill` it will force a DBCHK on the next start.
-
-## Acknowledgements
-Oscar Armer, Savant, for the inspiration.
+An alternative approach it to use a Docker volume.

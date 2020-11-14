@@ -81,6 +81,9 @@ config_and_start_mimer()
   if [ "${MIMER_GROUP_COMMIT_TIMEOUT}" != "" ]; then
     mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs GroupCommitTimeout ${MIMER_GROUP_COMMIT_TIMEOUT}
   fi
+  if [ "${MIMER_NETWORK_ENCRYPTION}" != "" ]; then
+    mimchval ${MIMER_DATA_DIR}/${MIMER_DATABASE}/multidefs NetworkEncryption ${MIMER_NETWORK_ENCRYPTION}
+  fi
 
   echo "Starting database..."
   mimcontrol -s ${MIMER_DATABASE}

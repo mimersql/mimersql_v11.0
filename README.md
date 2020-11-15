@@ -46,10 +46,29 @@ The JDBC connection string would then be
 ```jdbc:mimer://localhost:1360/mimerdb```
 
 ## Saving data between containers
-Since the container is a separate entity, the above solution will lose all data when the container is killed. There are several solutions to this but the easiest is to map a directory on the host system to the container's MIMER_DATA_DIR, thus causing all file writes to happen in the host file system which is persistent. The default MIMER_DATA_DIR in the container is `/data`. This can be changed with the environment variable MIMER_DATA_DIR.
+Since the container is a separate entity, the above solution will lose all data when the container is killed. 
 
-To achieve this is, create a directory on the host that will act as the MIMER_DATA_DIR. This is where the database, license files and configurations are stored. Everything is stored in the database home directory located in MIMER_DATA_DIR, by default `mimerdb`. Then mount the directory when starting the container:
+There are several solutions to this but the easiest is to use ´bind mounts´ where a directory on the host system is bound to the container's MIMER_DATA_DIR, thus causing all file writes to happen in the host file system which is persistent. This is commonly used for testing.
+
+An alternative solutin is to use Docker volumes. This way the storage is managed by Docker. Just as with `bind mounts` the MIMER_DATA_DIR is mapped to the volume.
+
+The default MIMER_DATA_DIR in the container is `/data`. This can be changed with the environment variable MIMER_DATA_DIR. This is where the database, license files and configurations are stored. Everything is stored in the database home directory located in MIMER_DATA_DIR, by default `mimerdb`.
+
+### Using bind mounts
+To use `bind mounts`, create a directory on the host that will act as the MIMER_DATA_DIR. When the directoy is created, mount it when starting the container:
+
 ```docker run -v /my_data:/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+
 The Mimer SQL database and it's configuration will now be stored in /my_data/mimerdb on the host.
 
-An alternative approach it to use a Docker volume.
+### Using Docker volumes
+To use Docker volumes, create the volume using `docker volume create`, for example:
+```docker volume create mimer_data````
+
+When starting the container, map the volume to the container:
+
+```docker run -v mimer_data:/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+or
+```docker run --mount source=mimer_-_data, target=/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+
+The Mimer SQL database and it's configuration will now be stored in the Docker volume.

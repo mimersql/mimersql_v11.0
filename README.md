@@ -69,6 +69,6 @@ When starting the container, map the volume to the container:
 
 ```docker run -v mimer_data:/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
 or
-```docker run --mount source=mimer_-_data, target=/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+```docker run --mount source=mimer_data, target=/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
 
 The Mimer SQL database and it's configuration will now be stored in the Docker volume.

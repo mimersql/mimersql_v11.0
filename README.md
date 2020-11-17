@@ -2,6 +2,8 @@
 
 This is a docker build of Mimer SQL version 11.0. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
 
+The docker image include a webservice that let you monitor and administer the Mimer SQL database using standard REST calls.
+
 ## Running Mimer
 Run the container with
 
@@ -72,3 +74,24 @@ or
 ```docker run --mount source=mimer_data, target=/data -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
 
 The Mimer SQL database and it's configuration will now be stored in the Docker volume.
+
+## Using the webservice to monitor and administer Mimer SQL
+This version of the the Docker image comes with an integrated webservice that let you administer and monitor Mimer SQL using REST calls. The request and respone are JSON based. See the API specification in the doc folder for details on all the calls.
+
+Here is an example that show the SQL execution log:
+```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
+
+You don't have to specify login information with all calls. You can also generate a security token that can be used instead:
+
+```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X GET  https://localhost:5001/gettoken```. This will give you a token to use in future calls:
+
+```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token \<your security token\>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
+
+To enable the webservice, specify `-e MIMER_REST_CONTROLLER=true` when starting the container.
+
+The following parameters can be used to control the webservice:
+- MIMER_REST_CONTROLLER: Enable or disable the webservice. Valid values are true and false.
+- MIMER_REST_CONTROLLER_USER: The username used in the HTTP authentication. If not specified, `mimadmin` is used.
+- MIMER_REST_CONTROLLER_PASSWORD: The password used in the HTTP authentication. If not specified a password is generated and printed at the first start.
+- MIMER_REST_CONTROLLER_PORT: The portnumber used by the webservice. Default port number if not specified is 5001.
+- MIMER_REST_CONTROLLER_USE_HTTP: If true, HTTP is used instead of HTTPS. This is NOT recomended since passwords will be sent in clear text. Valid values are true and false.

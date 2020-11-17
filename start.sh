@@ -1,4 +1,24 @@
 #!/usr/bin/env bash
+# Copyright (c) 2017 Mimer Information Technology
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
 DEF_MIMER_DATA_DIR=/data
 DEF_MIMER_DATABASE=mimerdb
 
@@ -159,6 +179,7 @@ then
   echo "Creating a new Mimer SQL database ${MIMER_DATABASE}"
   sdbgen -p ${SYSADM_PWD} ${MIMER_DATABASE}
   config_and_start_mimer
+
   #Check if a initialization SQL file was specified
   if [ "${MIMER_INIT_FILE}" != "" ];
   then
@@ -173,10 +194,79 @@ fi
 
 if [ $CREATE_DATABASE = 1 -a "${MIMER_SYSADM_PASSWORD}" = "" ]; 
 then
+  echo "=========================================================="
   echo "Mimer SQL SYSADM password is: ${SYSADM_PWD}" 
   echo "Remember this password since it cannot be recovered later"
+  echo "=========================================================="
 fi
 
+USE_MIMER_CONTROLLER=`echo ${MIMER_REST_CONTROLLER} | tr '[A-Z]' '[a-z]'`
+if [ "$USE_MIMER_CONTROLLER" = "true" ]; 
+then
+  export MIMER_REST_CONTROLLER_AUTH_FILE=${MIMER_DATA_DIR}/${MIMER_DATABASE}/.htpasswd
+
+  #If we have created a new database, create a new .htpasswd as well
+  if [ $CREATE_DATABASE = 1 ];
+  then
+    rm -f  ${MIMER_REST_CONTROLLER_AUTH_FILE}
+  fi
+  if [ ! -e ${MIMER_REST_CONTROLLER_AUTH_FILE} ];
+  then
+
+    if [ "${MIMER_REST_CONTROLLER_USER}" = "" ];
+    then
+      REST_USER=mimadmin
+      echo ""
+      echo "Mimer SQL REST Controller default user \"mimadmin\" is used since none was specified with -e MIMER_REST_CONTROLLER_USER=<user>"
+    else
+      REST_USER=${MIMER_REST_CONTROLLER_USER}
+    fi
+
+    if [ "${MIMER_REST_CONTROLLER_PASSWORD}" = "" ];
+    then
+      #Generate a new password and print it
+      REST_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w12 | head -n1)
+      echo ""
+      echo "Mimer SQL REST Controller password is generated since none was specified with -e MIMER_REST_CONTROLLER_PASSWORD=<password>"
+      echo ""
+      echo "Generated password: ${REST_PWD}"
+      echo "Remember the password, it cannot be recovered, but a new one can be created with \"htpasswd -c ${MIMER_REST_CONTROLLER_AUTH_FILE}\""
+    else
+      REST_PWD=${MIMER_REST_CONTROLLER_PASSWORD}
+    fi
+
+    #Create a .htpasswd file for Mimer SQL Rest controller authtentication
+    htpasswd -bc ${MIMER_REST_CONTROLLER_AUTH_FILE} ${REST_USER} ${REST_PWD}
+
+    #Copy the cert.pem and key.pem to ${MIMER_DATA_DIR}/.cert.pem and .key.pem
+    if [ ! -e ${MIMER_DATA_DIR}/cert.pem ]; then
+      cp mimer_controller/cert.pem ${MIMER_DATA_DIR}/cert.pem 
+    fi
+    if [ ! -e ${MIMER_DATA_DIR}/key.pem ]; then
+      cp mimer_controller/key.pem ${MIMER_DATA_DIR}/key.pem 
+    fi
+  fi
+
+  if [ "${MIMER_REST_CONTROLLER_PORT}" != "" ];
+  then
+    MIMER_CONTROLLER_PORT=${MIMER_REST_CONTROLLER_PORT}
+  else
+    MIMER_CONTROLLER_PORT=5001
+  fi
+  export FLASK_APP=mimer_controller
+  export FLASK_ENV=development
+  export FLASK_DEBUG=0
+  cd mimer_controller
+  echo ""
+  echo "Starting Mimer SQL REST controller on port ${MIMER_CONTROLLER_PORT}"
+  if [ "${MIMER_REST_CONTROLLER_USE_HTTP}" = "true" ]; then
+    python3 -m gunicorn.app.wsgiapp -b 0.0.0.0:${MIMER_CONTROLLER_PORT} --daemon --access-logfile ${MIMER_DATA_DIR}/mimer_controller_access_log_${MIMER_DATABASE}.log --error-logfile ${MIMER_DATA_DIR}/mimer_controller_error_log_${MIMER_DATABASE}.log mimer_controller:app
+  else
+    python3 -m gunicorn.app.wsgiapp -b 0.0.0.0:${MIMER_CONTROLLER_PORT} --daemon --keyfile ${MIMER_DATA_DIR}/key.pem --certfile ${MIMER_DATA_DIR}/cert.pem --access-logfile ${MIMER_DATA_DIR}/mimer_controller_access_log_${MIMER_DATABASE}.log --error-logfile ${MIMER_DATA_DIR}/mimer_controller_error_log_${MIMER_DATABASE}.log mimer_controller:app &
+  fi
+fi
+
+echo "Container started"
 # Wait forever
 while true
 do

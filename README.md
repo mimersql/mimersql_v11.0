@@ -85,7 +85,7 @@ You don't have to specify login information with all calls. You can also generat
 
 ```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X GET  https://localhost:5001/gettoken```. This will give you a token to use in future calls:
 
-```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token \<your security token\>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
+```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token <your security token>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
 
 To enable the webservice, specify `-e MIMER_REST_CONTROLLER=true` when starting the container.
 

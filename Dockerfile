@@ -7,7 +7,7 @@ RUN apt-get update \
 
 # set the name of the package
 ENV MIMVERSION mimersql1104_11.0.4B
-ENV DEBFILE ${MIMVERSION}-33930_amd64.deb 
+ENV DEBFILE ${MIMVERSION}-33944_amd64.deb 
 
 # fetch the package and install it
 RUN wget -nv -o {DEBFILE} http://ftp.mimer.com/pub/dist/linux_x64/${DEBFILE}

@@ -203,7 +203,7 @@ fi
 USE_MIMER_CONTROLLER=`echo ${MIMER_REST_CONTROLLER} | tr '[A-Z]' '[a-z]'`
 if [ "$USE_MIMER_CONTROLLER" = "true" ]; 
 then
-  export MIMER_REST_CONTROLLER_AUTH_FILE=${MIMER_DATA_DIR}/${MIMER_DATABASE}/.htpasswd
+  export MIMER_REST_CONTROLLER_AUTH_FILE=${MIMER_DATA_DIR}/htpasswd
 
   #If we have created a new database, create a new .htpasswd as well
   if [ $CREATE_DATABASE = 1 ];

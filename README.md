@@ -81,13 +81,13 @@ The Mimer SQL database and it's configuration will now be stored in the Docker v
 This version of the the Docker image comes with an integrated webservice that let you administer and monitor Mimer SQL using REST calls. The request and respone are JSON based. See the API specification in the doc folder for details on all the calls.
 
 Here is an example that show the SQL execution log:
-```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
+```curl -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
 
 You don't have to specify login information with all calls. You can also generate a security token that can be used instead:
 
-```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X GET  https://localhost:5001/gettoken```. This will give you a token to use in future calls:
+```curl -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X GET  https://localhost:5001/gettoken```. This will give you a token to use in future calls:
 
-```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token <your security token>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
+```curl -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token <your security token>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
 
 To enable the webservice, specify `-e MIMER_REST_CONTROLLER=true` when starting the container.
 
@@ -97,3 +97,7 @@ The following parameters can be used to control the webservice:
 - MIMER_REST_CONTROLLER_PASSWORD: The password used in the HTTP authentication. If not specified a password is generated and printed at the first start.
 - MIMER_REST_CONTROLLER_PORT: The portnumber used by the webservice. Default port number if not specified is 5001.
 - MIMER_REST_CONTROLLER_USE_HTTP: If true, HTTP is used instead of HTTPS. This is NOT recomended since passwords will be sent in clear text. Valid values are true and false.
+
+The webservice comes with a dummy certificate to be able to use HTTPS. It's highly encouraged to install a real certificate. This can be done by replacing ${MIMER_DATA_DIR}/.key.pem and ${MIMER_DATA_DIR}/.cert.pem. To be able to use the dummy certificate you might have to allow unsecure certificates, for example ```curl --insecure -u mimadmin:cgujdUy639B -H "Content-Type: application/json" -X GET  https://localhost:5001/gettoken```
+
+To administer the users that can access the webservice, use the the standard `htpasswd` command in the container. This can be used to add, delete, and modify users. The password file used is ${MIMER_DATA_DIR}/${MIMER_DATABASE}/.htpasswd.

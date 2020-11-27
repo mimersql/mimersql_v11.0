@@ -77,7 +77,9 @@ def get_mimer_error_code(e):
         The Mimer SQL error code
     """
     err = -1
-    if mimerpy.version > '1.0.20':
+    if mimerpy.version > '1.0.24' or mimerpy.version == '':
+        err = e.errno
+    elif mimerpy.version > '1.0.20':
         err = e.message[0]
     else:
         if e.message == "Login failure":
@@ -100,7 +102,12 @@ def get_mimer_error_text(e):
     Returns:
         The Mimer SQL error text
     """
-    if mimerpy.version > '1.0.20':
+    if mimerpy.version > '1.0.24' or mimerpy.version == '':
+        if e.errno == 90:
+            return 'Login failure'
+        else:
+            return e.message
+    elif mimerpy.version > '1.0.20':
         if e.message[0] == 90:
             return 'Login failure'
         else:

@@ -1,17 +1,16 @@
-# This Docker image is based on debian
-FROM debian:buster
+# This Docker image is based on Ubuntu
+FROM ubuntu:20.04
 
 # update and install necessary utilities
 RUN apt-get update \
     && apt-get install -y wget procps file sudo
 
 # set the name of the package
-ENV MIMVERSION mimersql1104_11.0.4B
-ENV DEBFILE ${MIMVERSION}-33944_amd64.deb 
+ENV MIMVERSION mimersqlsrv1105_11.0.5A
+ENV DEBFILE ${MIMVERSION}-34698_amd64.deb 
 
 # fetch the package and install it
-RUN wget -nv -o {DEBFILE} http://ftp.mimer.com/pub/dist/linux_x64/${DEBFILE}
-RUN mkdir /usr/lib32
+RUN wget -nv -o {DEBFILE} http://ftp.mimer.com/pub/dist/linux_x86_64/${DEBFILE}
 RUN dpkg --install ${DEBFILE}
 STOPSIGNAL SIGINT
 

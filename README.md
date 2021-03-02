@@ -13,7 +13,7 @@ or use a specic tag, for example the V11.0.5A release:
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
 
-The default name of the created database is "mimerdb" and it can be customized with ```-e MIMER_DATABASSE=<database name>```
+The default name of the created database is "mimerdb" and it can be customized with ```-e MIMER_DATABASE=<database name>```
 
 A SYSADM password can be specified with ```-e MIMER_SYSADM_PASSWORD=<password>```. If not, a new password is generated and printed. Remember this password, it cannot be recovered.
 

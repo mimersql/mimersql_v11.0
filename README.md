@@ -8,8 +8,8 @@ The docker image include a webservice that let you monitor and administer the Mi
 Run the container with
 
 ```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
-or use a specic tag, for example the V11.0.4A releas:
-```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.4a```
+or use a specic tag, for example the V11.0.5A release:
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.5a```
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
 

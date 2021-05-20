@@ -151,7 +151,7 @@ fi
 
 #Register the database. We don't want to run "dbinstall" since that starts the database
 mimsqlhosts -a -t local ${MIMER_DATABASE} ${MIMER_DATA_DIR}/${MIMER_DATABASE}
-
+mimsqlhosts -d ${MIMER_DATABASE}
 #Create the database if it doesn't exist, otherwise start it
 if [ $CREATE_DATABASE = 1 ]; 
 then

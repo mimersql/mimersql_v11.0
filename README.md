@@ -1,6 +1,6 @@
 # Mimer SQL version 11.0
 
-This is a docker build of Mimer SQL version 11.0. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/product-overview/downloads/
+This is a docker build of Mimer SQL version 11.0. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/products/downloads/
 
 ## Running Mimer
 Run the container with
@@ -9,13 +9,15 @@ Run the container with
 or use a specic tag, for example the V11.0.5A release:
 ```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.5a```
 
-This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL.
+This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL. To show the ouput, for example generated passwords, run ``` docker logs <id> ``` with the id returned from ``` docker run ```. It's also possible to find the id with ``` docker ps ```. Alternatively, run ``` docker logs $(docker ps -q --filter ancestor=mimersql/mimersql_v11.0:latest) ```
 
 The default name of the created database is "mimerdb" and it can be customized with ```-e MIMER_DATABASE=<database name>```
 
 A SYSADM password can be specified with ```-e MIMER_SYSADM_PASSWORD=<password>```. If not, a new password is generated and printed. Remember this password, it cannot be recovered.
 
 A Mimer SQL license can be specified with ```-e MIMER_KEY=<Hex key value>```. If a persistent storage is used the Mimer SQL license is saved in the Mimer data directory, MIMER_DATA_DIR (see below), for future use, i.e when the container is started again. An alternative way is to copy your Mimer SQL license file directly to MIMER_DATA_DIR/my_mimerkey.mcfg.
+
+It's also possible to run the Mimer SQL container using <a href="https://podman.io/">Podman</a> instead of Docker. The commands are the same except the ```--filter``` option that have to include "docker.io", for example ``` podman logs $(podman ps -q --filter ancestor=docker.io/mimersql/mimersql_v11.0:latest) ```
 
 ## Configuration of the Mimer SQL database
 It's possible to configure the Mimer SQL database, for example how much memory it will use and what TCP port to use with Docker environment variables. To configure the TCP Port for example, use ```-e MIMER_TCP_PORT=<port number>``` when starting the container. The following environment variables with the corresponding Mimer SQL multidefs configuration parameter are available:

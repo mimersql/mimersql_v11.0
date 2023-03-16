@@ -7,9 +7,9 @@ The docker image include a webservice that let you monitor and administer the Mi
 ## Running Mimer
 Run the container with
 
-```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest-rest```
 or use a specic tag, for example the V11.0.7A release:
-```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.7a```
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.7a-rest```
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL. To show the ouput, for example generated passwords, run ``` docker logs <id> ``` with the id returned from ``` docker run ```. It's also possible to find the id with ``` docker ps ```. Alternatively, run ``` docker logs $(docker ps -q --filter ancestor=mimersql/mimersql_v11.0:latest) ```
 

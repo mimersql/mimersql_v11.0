@@ -26,7 +26,7 @@ RUN apt-get update \
     && apt-get install -y wget procps file apache2-utils sudo libdw1
 
 # set the name of the package
-ENV DEBFILE mimersqlsrv1107_11.0.7D-40465_amd64-openssl3.deb
+ENV DEBFILE mimersqlsrv1108_11.0.8E-46583_amd64-openssl3.deb
 
 # fetch the package and install it
 RUN wget -nv -o {DEBFILE} https://download.mimer.com/pub/dist/linux_x86_64/${DEBFILE}

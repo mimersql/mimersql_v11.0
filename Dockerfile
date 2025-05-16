@@ -5,12 +5,14 @@ FROM ubuntu:22.04
 RUN apt-get update \
     && apt-get install -y wget procps file sudo libdw1
 
-# set the name of the package
-ENV DEBFILE=mimersqlsrv1108_11.0.8E-46583_amd64-openssl3.deb
-
 # fetch the package and install it
-RUN wget -nv -o {DEBFILE} https://download.mimer.com/pub/dist/linux_x86_64/${DEBFILE}
-RUN dpkg --install ${DEBFILE}
+RUN case "$(uname -m)" in \
+        aarch64) export MIMER_DEB="linux_arm_64/mimersqlsrv1108_11.0.8E-46583_arm64-openssl3.deb" ;; \
+        x86_64)  export MIMER_DEB="linux_x86_64/mimersqlsrv1108_11.0.8E-46583_amd64-openssl3.deb" ;; \
+    esac; \
+    wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB} && \
+    dpkg --install mimersql.deb
+
 STOPSIGNAL SIGINT
 
 # copy the start script and launch Mimer SQL

@@ -7,10 +7,10 @@ RUN apt-get update \
 
 # fetch the package and install it
 RUN case "$(uname -m)" in \
-        aarch64) export MIMER_ARCH_SHORT="arm64" export MIMER_ARCH_LONG="linux_arm_64" ;; \
-        x86_64) export MIMER_ARCH_SHORT="amd64" export MIMER_ARCH_LONG="linux_x86_64" ;; \
+        aarch64) export MIMER_DEB="linux_arm_64/mimersqlsrv1108_11.0.8E-46583_arm64-openssl3.deb" ;; \
+        x86_64)  export MIMER_DEB="linux_x86_64/mimersqlsrv1108_11.0.8E-46583_amd64-openssl3.deb" ;; \
     esac; \
-    wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_ARCH_LONG}/mimersqlsrv1108_11.0.8E-46583_${MIMER_ARCH_SHORT}-openssl3.deb && \
+    wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB} && \
     dpkg --install mimersql.deb
 
 STOPSIGNAL SIGINT

@@ -94,7 +94,7 @@ You don't have to specify login information with all calls. You can also generat
 
 ```curl -u mimadmin:cgujdUy639B -H "Content-Type: application/json, Authorization: token <your security token>" -X POST -d '{"password":"x7#xx93"}'  https://localhost:5001/log_sql/mimerdb```
 
-To enable the webservice, specify `-e MIMER_REST_CONTROLLER=true` when starting the container.
+To enable the webservice, specify `-e MIMER_REST_CONTROLLER=true` when starting the container. You also need to map a port to the container, for example `-p 5001:5001` for the default port.
 
 The following parameters can be used to control the webservice:
 - MIMER_REST_CONTROLLER: Enable or disable the webservice. Valid values are true and false.

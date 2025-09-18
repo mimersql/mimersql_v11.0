@@ -25,12 +25,14 @@ FROM ubuntu:22.04
 RUN apt-get update \
     && apt-get install -y wget procps file apache2-utils sudo libdw1
 
-# set the name of the package
-ENV DEBFILE=mimersqlsrv1108_11.0.8E-46583_amd64-openssl3.deb
-
 # fetch the package and install it
-RUN wget -nv -o {DEBFILE} https://download.mimer.com/pub/dist/linux_x86_64/${DEBFILE}
-RUN dpkg --install ${DEBFILE}
+RUN case "$(uname -m)" in \
+        aarch64) export MIMER_DEB="linux_arm_64/mimersqlsrv1109_11.0.9E-49534_arm64-openssl3.deb" ;; \
+        x86_64)  export MIMER_DEB="linux_x86_64/mimersqlsrv1109_11.0.9E-49534_amd64-openssl3.deb" ;; \
+    esac; \
+    wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB} && \
+    dpkg --install mimersql.deb
+
 STOPSIGNAL SIGINT
 
 #install Python3 and required packages

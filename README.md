@@ -1,13 +1,16 @@
 # Mimer SQL version 11.0
 
-This is a docker build of Mimer SQL version 11.0. It comes with a ten user license, the same that all our free downloads come with; see https://developer.mimer.com/products/downloads/
+This is a Docker build of Mimer SQL version 11.0. It includes a two-user evaluation license, identical to the one provided with all our downloads (see https://developer.mimer.com/products/downloads/
+).
+
+By downloading Mimer SQL for Linux, you can obtain a less restricted evaluation license, which can be installed by following the instructions below.
 
 ## Running Mimer
 Run the container with
 
 ```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:latest```
-or use a specic tag, for example the v11.0.8e release:
-```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.8e```
+or use a specic tag, for example the v11.0.9e release:
+```docker run -p 1360:1360 -d mimersql/mimersql_v11.0:v11.0.9e```
 
 This launches a Mimer SQL database server that is accessible on port 1360, the standard port for Mimer SQL. To show the ouput, for example generated passwords, run ``` docker logs <id> ``` with the id returned from ``` docker run ```. It's also possible to find the id with ``` docker ps ```. Alternatively, run ``` docker logs $(docker ps -q --filter ancestor=mimersql/mimersql_v11.0:latest) ```
 

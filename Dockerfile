@@ -19,7 +19,7 @@
 # SOFTWARE.
 #
 # This Docker image is based on Ubuntu
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # update and install necessary utilities
 RUN apt-get update \
@@ -37,10 +37,10 @@ STOPSIGNAL SIGINT
 
 #install Python3 and required packages
 RUN apt-get -y install python3 python3-pip python3-setuptools python3-wheel curl net-tools
-RUN pip3 install requests
-RUN pip3 install flask flask_htpasswd
-RUN pip3 install gunicorn
-RUN pip3 install mimerpy
+RUN pip3 install --break-system-packages requests
+RUN pip3 install --break-system-packages flask flask_htpasswd
+RUN pip3 install --break-system-packages gunicorn
+RUN pip3 install --break-system-packages mimerpy
 
 RUN mkdir mimer_controller
 COPY mimer_controller/*.pem /mimer_controller/

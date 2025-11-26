@@ -177,6 +177,21 @@ then
   echo "Remember this password since it cannot be recovered later"
 fi
 
+if [ $CREATE_DATABASE = 1 -a "${CREATE_EXAMPLEDB}" = "YES" ]; 
+then
+  echo "Creating exemple environment"
+  exload -p ${SYSADM_PWD} ${MIMER_DATABASE}
+elif [ "${CREATE_EXAMPLEDB}" = "YES" ];
+then
+  if [ "${MIMER_SYSADM_PASSWORD}" = "" ]; 
+  then
+    echo "Cannot create example database since SYSADM password is not known"
+  else
+    echo "Creating exemple environment"
+    exload --force -p ${MIMER_SYSADM_PASSWORD} ${MIMER_DATABASE}
+  fi
+fi
+
 # Wait forever
 while true
 do

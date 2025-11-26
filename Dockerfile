@@ -1,5 +1,5 @@
 # This Docker image is based on Ubuntu
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # update and install necessary utilities
 RUN apt-get update \

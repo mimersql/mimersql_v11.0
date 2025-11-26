@@ -23,7 +23,10 @@ FROM ubuntu:24.04
 
 # update and install necessary utilities
 RUN apt-get update \
-    && apt-get install -y wget procps file apache2-utils sudo libdw1
+    && apt-get install -y --no-install-recommends \
+    wget procps file sudo libdw1 apache2-utils ca-certificates \
+    python3 python3-pip python3-setuptools python3-wheel curl net-tools && \
+    rm -rf /var/lib/apt/lists/*
 
 # fetch the package and install it
 RUN case "$(uname -m)" in \
@@ -31,13 +34,13 @@ RUN case "$(uname -m)" in \
         x86_64)  export MIMER_DEB="linux_x86_64/mimersqlsrv1109_11.0.9E-49534_amd64-openssl3.deb" ;; \
     esac; \
     wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB} && \
-    dpkg --install mimersql.deb
+    dpkg --install mimersql.deb && \
+    rm mimersql.deb
 
 STOPSIGNAL SIGINT
 
 #install Python3 and required packages
-RUN apt-get -y install python3 python3-pip python3-setuptools python3-wheel curl net-tools
-RUN pip3 install --break-system-packages requests
+RUN pip3 install --break-system-packages requests 
 RUN pip3 install --break-system-packages flask flask_htpasswd
 RUN pip3 install --break-system-packages gunicorn
 RUN pip3 install --break-system-packages mimerpy

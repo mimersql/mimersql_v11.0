@@ -40,10 +40,7 @@ RUN case "$(uname -m)" in \
 STOPSIGNAL SIGINT
 
 #install Python3 and required packages
-RUN pip3 install --break-system-packages requests 
-RUN pip3 install --break-system-packages flask flask_htpasswd
-RUN pip3 install --break-system-packages gunicorn
-RUN pip3 install --break-system-packages mimerpy
+RUN pip3 install --break-system-packages requests flask flask_htpasswd gunicorn mimerpy
 
 RUN mkdir mimer_controller
 COPY mimer_controller/*.pem /mimer_controller/

@@ -18,7 +18,7 @@ The default name of the created database is "mimerdb" and it can be customized w
 
 A SYSADM password can be specified with ```-e MIMER_SYSADM_PASSWORD=<password>```. If not, a new password is generated and printed. Remember this password, it cannot be recovered.
 
-A Mimer SQL license can be specified with ```-e MIMER_KEY=<Hex key value>```. If a persistent storage is used the Mimer SQL license is saved in the Mimer data directory, MIMER_DATA_DIR (see below), for future use, i.e when the container is started again. An alternative way is to copy your Mimer SQL license file directly to MIMER_DATA_DIR/my_mimerkey.mcfg.
+A Mimer SQL license can be specified with ```-e MIMER_KEY=<Hex key value>```. If a persistent storage is used the Mimer SQL license is saved in the Mimer data directory, MIMER_DATA_DIR (see below), for future use, i.e when the container is started again. An alternative way is to copy your Mimer SQL license file directly to MIMER_DATA_DIR/my_mimerkey.mcfg. To use a node locked license the hostname of the Docker container needs to be specified to match the node in the license. This is done with ```docker run --hostname mynodename ...```.
 
 It's also possible to run the Mimer SQL container using <a href="https://podman.io/">Podman</a> instead of Docker. The commands are the same except the ```--filter``` option that have to include "docker.io", for example ``` podman logs $(podman ps -q --filter ancestor=docker.io/mimersql/mimersql_v11.0:latest) ```
 

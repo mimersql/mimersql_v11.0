@@ -345,14 +345,15 @@ def show_db_perf(database_name:str):
     return json_response
 
 
-def show_sql_log(database_name:str, sysadm_pass:str):
+def show_sql_log(database_name:str, sysadm_pass:str, superuser:str = 'SYSADM'):
     """Show SQL execution log.
 
     Show executed SQL with performance information
 
     Args:
         database_name(str): The database name
-        sysadm_pass(str): SYSADM password
+        sysadm_pass(str): Superuser password
+        superuser(str): Superuser name. Defaults to SYSADM.
 
     Returns: JSON document with the SQL log, for example:
         {
@@ -376,7 +377,7 @@ def show_sql_log(database_name:str, sysadm_pass:str):
     parameterStatus = check_params({"database_name":database_name,"password":sysadm_pass})
     if(parameterStatus['return_status'] == 'failure'):
         return parameterStatus
-    result = subprocess.run(['sqlmonitor', '-d3', database_name, '-uSYSADM', '-p' + sysadm_pass], stdout=subprocess.PIPE)
+    result = subprocess.run(['sqlmonitor', '-d3', database_name, '-u' + superuser, '-p' + sysadm_pass], stdout=subprocess.PIPE)
     json_response = {}
     response = result.stdout.decode('utf-8')
     if result.returncode != 0:

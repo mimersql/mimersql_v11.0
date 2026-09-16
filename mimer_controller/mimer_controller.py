@@ -43,6 +43,11 @@ app = Flask(__name__)
 
 authFile=os.environ.get('MIMER_REST_CONTROLLER_AUTH_FILE', '.htpasswd')
 app.config['FLASK_HTPASSWD_PATH'] = authFile
+
+# The Mimer SQL superuser name. Defaults to SYSADM (always correct for
+# 11.0, and the default from 11.1 too unless the container was started
+# with -e MIMER_SUPERUSER=<name>).
+SUPERUSER = os.environ.get('MIMER_SUPERUSER', 'SYSADM')
 app.config['FLASK_SECRET'] = 'Mimer SQL REST Controller'
 htpasswd = HtPasswdAuth(app)
 
@@ -326,13 +331,13 @@ def show_sql_log(user, database_name):
     Returns: JSON document, see mimcontrol.show_sql_log() for details
     """
     pswd = request.get_json().get('password')
-    return mimcontrol.show_sql_log(database_name, pswd)
+    return mimcontrol.show_sql_log(database_name, pswd, SUPERUSER)
 
 
 @app.route('/update_sysadm_pass/<database_name>', methods=['POST'])
 @htpasswd.required
 def update_sysadm_pass(user, database_name):
-    """Change the password of SYSADM.
+    """Change the password of the Mimer SQL superuser (SYSADM by default).
 
     Args:
         user(str): The HttpAuth user
@@ -353,7 +358,7 @@ def update_sysadm_pass(user, database_name):
     """
     old_pswd = request.get_json().get('old_password')
     new_pswd = request.get_json().get('new_password')
-    return mimcontrol.changeUserPass(database_name, 'SYSADM', old_pswd, 'SYSADM', new_pswd)
+    return mimcontrol.changeUserPass(database_name, SUPERUSER, old_pswd, SUPERUSER, new_pswd)
 
 
 @app.route('/create_schema/<database_name>', methods=['POST'])

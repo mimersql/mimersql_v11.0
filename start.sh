@@ -117,9 +117,20 @@ then
   MIMER_DATA_DIR=${DEF_MIMER_DATA_DIR}
 fi
 
-if [ "${MIMER_DATABASE}" = "" ]; 
+if [ "${MIMER_DATABASE}" = "" ];
 then
   MIMER_DATABASE=${DEF_MIMER_DATABASE}
+fi
+
+# The superuser name defaults to SYSADM, just like it's hardcoded in 11.0.
+# From 11.1 it can be changed with -e MIMER_SUPERUSER=<name>. sdbgen and
+# exload only accept --username from 11.1 onward, so that flag is only
+# added when MIMER_SUPERUSER is actually set (11.0 images never set it).
+SUPERUSER=${MIMER_SUPERUSER:-SYSADM}
+SUPERUSER_ARG=""
+if [ "${MIMER_SUPERUSER}" != "" ];
+then
+  SUPERUSER_ARG="--username=${MIMER_SUPERUSER}"
 fi
 
 #Create Mimer database directory if it doesn't exist
@@ -140,7 +151,7 @@ if [ "${MIMER_SYSADM_PASSWORD}" = "" -a $CREATE_DATABASE = 1 ];
 then
   #Generate a new SYSADM password and print it
   SYSADM_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w12 | head -n1)
-  echo "Mimer SQL SYSADM password is generated since none was specified with -e MIMER_SYSADM_PASSWORD=<password>"
+  echo "Mimer SQL ${SUPERUSER} password is generated since none was specified with -e MIMER_SYSADM_PASSWORD=<password>"
 else
   SYSADM_PWD=${MIMER_SYSADM_PASSWORD}
 fi
@@ -177,14 +188,14 @@ if [ $CREATE_DATABASE = 1 ];
 then
   # create a new, empty database
   echo "Creating a new Mimer SQL database ${MIMER_DATABASE}"
-  sdbgen -p ${SYSADM_PWD} ${MIMER_DATABASE}
+  sdbgen -p ${SYSADM_PWD} ${SUPERUSER_ARG} ${MIMER_DATABASE}
   config_and_start_mimer
 
   #Check if a initialization SQL file was specified
   if [ "${MIMER_INIT_FILE}" != "" ];
   then
     echo "Running SQL init script"
-    bsql -uSYSADM -p${SYSADM_PWD} < ${MIMER_INIT_FILE}
+    bsql -u${SUPERUSER} -p${SYSADM_PWD} < ${MIMER_INIT_FILE}
   fi
 else
   # start Mimer SQL
@@ -192,10 +203,9 @@ else
   config_and_start_mimer
 fi
 
-if [ $CREATE_DATABASE = 1 -a "${MIMER_SYSADM_PASSWORD}" = "" ]; 
+if [ $CREATE_DATABASE = 1 -a "${MIMER_SYSADM_PASSWORD}" = "" ];
 then
-  echo "=========================================================="
-  echo "Mimer SQL SYSADM password is: ${SYSADM_PWD}" 
+  echo "Mimer SQL ${SUPERUSER} password is: ${SYSADM_PWD}"
   echo "Remember this password since it cannot be recovered later"
   echo "=========================================================="
 fi
@@ -266,18 +276,18 @@ then
   fi
 fi
 
-if [ $CREATE_DATABASE = 1 -a "${CREATE_EXAMPLEDB}" = "YES" ]; 
+if [ $CREATE_DATABASE = 1 -a "${CREATE_EXAMPLEDB}" = "YES" ];
 then
   echo "Creating exemple environment"
-  exload -p ${SYSADM_PWD} ${MIMER_DATABASE}
+  exload -p ${SYSADM_PWD} ${SUPERUSER_ARG} ${MIMER_DATABASE}
 elif [ "${CREATE_EXAMPLEDB}" = "YES" ];
 then
-  if [ "${MIMER_SYSADM_PASSWORD}" = "" ]; 
+  if [ "${MIMER_SYSADM_PASSWORD}" = "" ];
   then
-    echo "Cannot create example database since SYSADM password is not known"
+    echo "Cannot create example database since ${SUPERUSER} password is not known"
   else
     echo "Creating exemple environment"
-    exload --force -p ${MIMER_SYSADM_PASSWORD} ${MIMER_DATABASE}
+    exload --force -p ${MIMER_SYSADM_PASSWORD} ${SUPERUSER_ARG} ${MIMER_DATABASE}
   fi
 fi
 

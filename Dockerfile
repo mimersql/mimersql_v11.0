@@ -1,17 +1,20 @@
+# syntax=docker/dockerfile:1
 # This Docker image is based on Ubuntu
-FROM ubuntu:24.04
 
-# update and install necessary utilities
+# --- Builder stage: only fetches the Mimer SQL .deb ------------------------
+# wget/ca-certificates are only needed to download the package, never at
+# runtime, so they're kept out of the final image entirely (see below).
+FROM ubuntu:24.04 AS builder
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    wget procps file sudo libdw1 ca-certificates && \
+    wget ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# MIMER_VERSION selects which major version's single .deb gets installed
+# MIMER_VERSION selects which major version's single .deb gets fetched
 # below.
 ARG MIMER_VERSION=11.0
 
-# fetch the package and install it
 RUN set -e; \
     case "$(uname -m)" in \
         aarch64) MIMER_ARCH="arm64"; MIMER_ARCH_DIR="linux_arm_64" ;; \
@@ -32,9 +35,20 @@ RUN set -e; \
             amd64) MIMER_DEB="${MIMER_ARCH_DIR}/mimersqlsrv1109_11.0.9G-52545_amd64-openssl3.deb" ;; \
         esac; \
     fi; \
-    wget -nv -O mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB} && \
-    dpkg --install mimersql.deb && \
-    rm mimersql.deb
+    wget -nv -O /tmp/mimersql.deb https://download.mimer.com/pub/dist/${MIMER_DEB}
+
+# --- Final image -------------------------------------------------------
+FROM ubuntu:24.04
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    openssl sudo ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# install the package fetched by the builder stage. The bind-mount means
+# the .deb itself is never written into a layer of the final image.
+RUN --mount=type=bind,from=builder,source=/tmp/mimersql.deb,target=/tmp/mimersql.deb \
+    dpkg --install /tmp/mimersql.deb
 
 STOPSIGNAL SIGINT
 

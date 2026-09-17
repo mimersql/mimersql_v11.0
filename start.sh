@@ -102,15 +102,21 @@ then
   MIMER_DATABASE=${DEF_MIMER_DATABASE}
 fi
 
+# Ask the installed Mimer SQL what version itactually is
+MIMER_VERSION_STRING=$(mimversion -v 2 | awk '{print $1}')
+MIMER_MAJOR_VERSION=$(echo "${MIMER_VERSION_STRING}" | cut -d. -f1,2)
+# Not used yet, but cheap to keep around for when we need it.
+MIMER_SUBRELEASE=$(echo "${MIMER_VERSION_STRING}" | cut -d. -f3 | sed -E 's/[A-Za-z]+$//')
+
 # The superuser name defaults to SYSADM, just like it's hardcoded in 11.0.
 # From 11.1 it can be changed with -e MIMER_SUPERUSER=<name>. sdbgen and
 # exload only accept --username from 11.1 onward, so that flag is only
-# added when MIMER_SUPERUSER is actually set (11.0 images never set it).
+# added when the running engine actually is 11.1 or later.
 SUPERUSER=${MIMER_SUPERUSER:-SYSADM}
 SUPERUSER_ARG=""
-if [ "${MIMER_SUPERUSER}" != "" ];
+if [ "${MIMER_MAJOR_VERSION}" != "11.0" ];
 then
-  SUPERUSER_ARG="--username=${MIMER_SUPERUSER}"
+  SUPERUSER_ARG="--username=${SUPERUSER}"
 fi
 
 #Create Mimer database directory if it doesn't exist
